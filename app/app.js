@@ -14,7 +14,7 @@ module.exports.configure = () => {
 };
 
 module.exports.initBD = (config) => {
-	mongodb.connect(`mongodb+srv://${config.db.login}:${config.db.password}@bd1-1ofs0.azure.mongodb.net/test?retryWrites=true&w=majority`, {
+	mongodb.connect(config.connectionString, {
 		useNewUrlParser: true,
 	});
 };
