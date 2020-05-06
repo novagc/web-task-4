@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Ответы</title>
+
+	<script>
+		function loadAnswer() {
+			fetch('../../api/result')
+			.then(res => res.json())
+			.then(data => {
+				const list = document.getElementById('list');
+				data.array.sort((a, b) => a.task - b.task).forEach(el => {
+					list.innerHTML += `<li><a href="../task/${
+						el.task === 1 ? 'one' : 
+							el.task === 2 ? 'two' : 
+								el.task === 3 ? 'three' : 
+									'four'}/${String(el._id)}">(${el.task}) ${String(el._id)}</a></li>`;
+				});
+			});
+		}
+		
+		document.addEventListener('DOMContentLoaded', loadAnswer);
+	</script>
+
+</head>
+
+<body>
+	<div>
+		<h1>Все ответы:</h1>
+		<ul id='list'></ul>
+	</div>
+	<div>
+		<a href="../../">Назад</a>
+	</div>
+</body>
+
+</html>

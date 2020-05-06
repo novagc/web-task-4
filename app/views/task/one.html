@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Задание 4.1</title>
+
+	<script>
+		function calc() {
+			const radius = document.getElementById('radius').value;
+
+			if (radius && Number(radius) > 0) {
+				Array.from(document.getElementsByClassName('input')).forEach(element => {
+					element.style = "display: none;"
+				});
+
+				fetch('../../api/solve/one', {
+					method: 'POST',
+					headers: { 'Content-type': 'application/json'},
+					body: JSON.stringify({ r: Number(radius), }),
+				})
+				.then(res => res.json())
+				.then(data => {
+					location.href = location.href + `/${data.id}`;
+				});
+			} else {
+				alert('Некорректные входные данные');
+			}
+		}
+
+		function loadAnswer() {
+			const temp = window.location.pathname.split('/').reverse();
+			if (temp[0] == 'one') {
+				Array.from(document.getElementsByClassName('answer')).forEach(elem => elem.style = 'display: none;');
+			} else {
+				Array.from(document.getElementsByClassName('input')).forEach(elem => elem.style = 'display: none;');
+				fetch(`../../../api/result/${temp[0]}`)
+				.then(res => res.json())
+				.then(data => {
+					console.log(
+						data.err ? data.err.split('|').join('\n') : 
+							data.task === 1 ? data.text.split('|').join('\n') : 
+								`Это ответ на задание №${data.number}`);
+					Array.from(document.getElementsByClassName('answer'))
+							.forEach(elem => elem.innerHTML = `<pre>${
+								data.err ? data.err.split('|').join('\n') : 
+									data.task === 1 ? data.text.split(' ').join('\t').split('|').join('\n') : 
+										`Это ответ на задание №${data.number}`}</pre>`);
+				});
+			}
+		}
+		
+		document.addEventListener('DOMContentLoaded', loadAnswer);
+	</script>
+
+</head>
+
+<body>
+	<div class="text">
+		Площадь круга по заданным параметрам.
+	</div>
+	<div class="input">
+		<input id="radius" type="number" name="r" value="Радиус">
+		<button onclick="calc();">Решить</button>
+	</div>
+	<div class="answer">
+
+	</div>
+	<div>
+		<a href="../../">Назад</a>
+	</div>
+</body>
+
+</html>

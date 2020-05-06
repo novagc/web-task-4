@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Задание 4.3</title>
+
+	<script>
+		function calc() {
+			let 
+				arr = Array(12).fill()
+					.map((elem, index) => index + 1)
+					.map(elem => document.getElementById(`a${elem}`).value),
+				good = arr.reduce((a, b) => a && b);
+
+			if (good) {
+				Array.from(document.getElementsByClassName('input')).forEach(element => {
+					element.style = "display: none;"
+				});
+
+				arr = arr.map(elem => Number(elem));
+
+				fetch('../../api/solve/three', {
+					method: 'POST',
+					headers: { 'Content-type': 'application/json'},
+					body: JSON.stringify({ 
+						arr: [ 
+							[ arr[0], arr[1], arr[2], ],
+							[ arr[3], arr[4], arr[5], ],
+							[ arr[6], arr[7], arr[8], ],
+							[ arr[9], arr[10], arr[11], ],
+						], 
+					}),
+				})
+				.then(res => res.json())
+				.then(data => {
+					location.href = location.href + `/${data.id}`;
+				});
+			} else {
+				alert('Некорректные входные данные');
+			}
+		}
+
+		function generate() {
+			fetch('../../api/generate')
+			.then(res => res.json())
+			.then(data => data.array.forEach((el, i) => document.getElementById(`a${i + 1}`).value = el));
+		}
+
+		function loadAnswer() {
+			const temp = window.location.pathname.split('/').reverse();
+			if (temp[0] == 'three') {
+				Array.from(document.getElementsByClassName('answer')).forEach(elem => elem.style = 'display: none;');
+			} else {
+				Array.from(document.getElementsByClassName('input')).forEach(elem => elem.style = 'display: none;');
+				fetch(`../../../api/result/${temp[0]}`)
+				.then(res => res.json())
+				.then(data => {
+					console.log(
+						data.err ? data.err.split('|').join('\n') : 
+							data.task === 3 ? data.text.split('|').join('\n') : 
+								`Это ответ на задание №${data.number}`);
+					Array.from(document.getElementsByClassName('answer'))
+							.forEach(elem => elem.innerHTML = `<pre>${
+								data.err ? data.err.split('|').join('\n') : 
+									data.task === 3 ? data.text.split(' ').join('\t').split('|').join('\n') : 
+										`Это ответ на задание №${data.number}`}</pre>`);
+				});
+			}
+		}
+		
+		document.addEventListener('DOMContentLoaded', loadAnswer);
+	</script>
+
+</head>
+
+<body>
+	<div class="text">
+		Матрица М состоит из 4 строк, 3 столбцов.<br>Вычесть из всех строк, начиная со второй, первую строку.
+	</div>
+	<div class="input">
+		<input id="a1" type="number" name="a1" value="Радиус"><input id="a2" type="number" name="a2" value="Радиус"><input id="a3" type="number" name="a3" value="Радиус"><br>
+		<input id="a4" type="number" name="a4" value="Радиус"><input id="a5" type="number" name="a5" value="Радиус"><input id="a6" type="number" name="a6" value="Радиус"><br>
+		<input id="a7" type="number" name="a7" value="Радиус"><input id="a8" type="number" name="a8" value="Радиус"><input id="a9" type="number" name="a9" value="Радиус"><br>
+		<input id="a10" type="number" name="a10" value="Радиус"><input id="a11" type="number" name="a11" value="Радиус"><input id="a12" type="number" name="a12" value="Радиус"><br>
+		<button onclick="generate();">Сгенерировать</button>
+		<button onclick="calc();">Решить</button>
+	</div>
+	<div class="answer">
+
+	</div>
+	<div>
+		<a href="../../">Назад</a>
+	</div>
+</body>
+
+</html>

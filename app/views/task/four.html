@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Задание 4.4</title>
+	<script>
+		function calc() {
+			const 
+				n = document.getElementById('n').value,
+				min = document.getElementById('min').value,
+				max = document.getElementById('max').value;
+
+			if (n && min && max && Number(n) > 0 && Number(min) < Number(max)) {
+				fetch('../../api/solve/four', {
+					method: 'POST',
+					headers: { 'Content-type': 'application/json'},
+					body: JSON.stringify({ n: Number(n), min: min, max: max }),
+				})
+				.then(res => res.json())
+				.then(data => {
+					location.href = location.href + `/${data.id}`;
+				});
+			} else {
+				alert('Некорректные входные данные');
+			}
+		}
+
+		function loadAnswer() {
+			const temp = window.location.pathname.split('/').reverse();
+			if (temp[0] == 'four') {
+				Array.from(document.getElementsByClassName('answer')).forEach(elem => elem.style = 'display: none;');
+			} else {
+				Array.from(document.getElementsByClassName('input')).forEach(elem => elem.style = 'display: none;');
+				fetch(`../../../api/result/${temp[0]}`)
+				.then(res => res.json())
+				.then(data => {
+					console.log(
+						data.err ? data.err.split('|').join('\n') : 
+							data.task === 4 ? data.text.split('|').join('\n') : 
+								`Это ответ на задание №${data.number}`);
+					Array.from(document.getElementsByClassName('answer'))
+							.forEach(elem => elem.innerHTML = `<pre>${
+								data.err ? data.err.split('|').join('\n') : 
+									data.task === 4 ? data.text.split(' ').join('\t').split('|').join('\n') : 
+										`Это ответ на задание №${data.number}`}</pre>`);
+				});
+			}
+		}
+		
+		document.addEventListener('DOMContentLoaded', loadAnswer);
+	</script>
+</head>
+<body>
+	<div class="text">
+		При выполнении задания необходимо написать 3 функции:<br>
+		<ul>
+			<li>Функция getRandomInt(min, max), которая принимает параметры min и max и возвращает случайное целое число между min (включительно) и max (не включая max)</li>
+			<li>Функция getArray(n), которая принимает размерность n и возвращает массив со сгенерированными значениями через функцию getRandomInt</li>
+			<li>Функция getResultArray(a), которая принимать исходный массив a и возвращать отсортированный массив</li>
+		</ul>
+Даны числа a1..a(n*n), получить квадратную матрицу порядка n, элементами которой являются числа a1..a(n*n), расположенные в ней по схеме:<br>
+<img src="../../img/schema.png">
+	</div>
+	<div class="input"><pre>
+N:	<input id="n" type="number" name="n" value="10">
+Min:	<input id="min" type="number" name="min" value="1">
+Max:	<input id="max" type="number" name="max" value="100">
+	</pre>
+		<button onclick="calc();">Решить</button>
+	</div>
+	<div class="answer">
+
+	</div>
+	<div>
+		<a href="../../">Назад</a>
+	</div>
+</body>
+</html>
