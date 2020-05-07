@@ -2,9 +2,9 @@ const
 	server = require('./app/app'),
 	config = require('./config.json');
 
-if (config.port && config.db && config.db.login && config.db.password) {
-	server.init();
-	server.start();
+if (config.port && config.connectionString) {
+	server.init(config);
+	server.start(config);
 } else {
 	console.log('Invalid config');
 }
